@@ -31,24 +31,24 @@
 
 tests = [ {'description': 'Test empty PINA',
     'steps': [ {'inputs': [('PINA',0x00)],'iterations': 1 } ],
-    'expected': [('PORTC',0x04)],},
+    'expected': [('PORTB',0x00)],},
     
     {'description': 'Test PINA = 0x01',
     'steps': [ {'inputs': [('PINA',0x01)], 'iterations': 1 } ],
-    'expected': [('PORTC',0x03)],
+    'expected': [('PORTB',0x01)],
     },
 
     {'description': 'Test PINA = 0x02',
     'steps': [ {'inputs': [('PINA',0x02)], 'iterations': 1 } ],
-    'expected': [('PORTC',0x03)],
+    'expected': [('PORTB',0x00)],
     },
     {'description': 'Test PINA = 0x03',
     'steps': [ {'inputs': [('PINA',0x03)], 'iterations': 1 } ],
-    'expected': [('PORTC',0x02)],
+    'expected': [('PORTB',0x00)],
     },
-    {'description': 'Test PINA = 0xFF',
-    'steps': [ {'inputs': [('PINA',0xFF )], 'iterations': 1 } ],
-    'expected': [('PORTC',0x80)],
+    {'description': 'Test PINA = 0xF1',
+    'steps': [ {'inputs': [('PINA',0xF1 )], 'iterations': 1 } ],
+    'expected': [('PORTB',0x01)],
     },
 
 

@@ -48,7 +48,7 @@ tests = [ {'description': 'Test empty PINA',
     },
     {'description': 'Test PINA = 0xFF',
     'steps': [ {'inputs': [('PINA',0xFF )], 'iterations': 1 } ],
-    'expected': [('PORTC',0x80)],
+    'expected': [('PORTC',0x00)],
     },
 
 

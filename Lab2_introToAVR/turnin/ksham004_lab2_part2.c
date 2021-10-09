@@ -1,7 +1,7 @@
 /*	Author: Khuaja Shams
  *  Partner(s) Name: 
  *	Lab Section: 21
- *	Assignment: Lab # 2 Exercise # 3
+ *	Assignment: Lab # 2 Exercise # 2
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -28,9 +28,6 @@ int main(void){
 				cntavail--;
 			tempA = tempA >> 1;
 		}
-
-		if (cntavail == 0)
-			cntavail = cntavail | 0x80;
 
 		PORTC = cntavail;
 		
