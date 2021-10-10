@@ -48,13 +48,21 @@ tests = [
     'expected': [('PORTB',0x02)],
     },
 
-    {'description': 'Test PINA = 0x01, then PINA = 0x00, then PINA = 0x01, then PINA = 0x00, then PINA = 0x01',
+    {'description': 'Test PINA = 0x02, then PINA = 0x03',
+    'steps': [
+        {'inputs': [('PINA',0x02)], 'iterations': 100, 'expected': [('PORTB',0x01)] ,
+         'inputs': [('PINA',0x03)], 'iterations': 100, 'expected': [('PORTB',0x02)]} ,
+        ],
+    'expected': [('PORTB',0x02)],
+    },
+
+    {'description': 'Test PINA = 0x01, then PINA = 0x00 alternating',
     'steps': [
         {'inputs': [('PINA',0x01)], 'iterations': 100, 'expected': [('PORTB',0x02)] ,
          'inputs': [('PINA',0x00)], 'iterations': 100, 'expected': [('PORTB',0x01)] ,
 	 'inputs': [('PINA',0x01)], 'iterations': 100, 'expected': [('PORTB',0x02)] ,
 	 'inputs': [('PINA',0x00)], 'iterations': 100, 'expected': [('PORTB',0x01)] ,
-         'inputs': [('PINA',0x01)], 'iterations': 100, 'expected': [('PORTB',0x02)]} , 
+         'inputs': [('PINA',0x01)], 'iterations': 100, 'expected': [('PORTB',0x02)]} ,
         ],
     'expected': [('PORTB',0x02)],
     },
