@@ -1,4 +1,4 @@
-/*	Author: Khuaja Shams
+/*	Author: Khuaja Shams, ksham004@ucr.edu
  *  Partner(s) Name: 
  *	Lab Section: 21
  *	Assignment: Lab #5  Exercise #1
@@ -6,6 +6,7 @@
  *
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
+ *	Demo Link: https://www.youtube.com/watch?v=8FgRI8Dwjyk	
  */
 #include <avr/io.h>
 #ifdef _SIMULATE_
