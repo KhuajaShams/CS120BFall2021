@@ -11,7 +11,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "../header/io.h"
+#include "io.h"
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
 #endif
