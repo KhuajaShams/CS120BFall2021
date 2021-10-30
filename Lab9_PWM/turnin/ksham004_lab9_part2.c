@@ -141,14 +141,6 @@ int main(void) {
 	Tick();
 
 	Tick_Sound();
-	/*if (tmpA1 == 0x01 && tmpA2 == 0x00 && tmpA3 == 0x00) 
-		set_PWM(261.63);
-	else if (tmpA2 == 0x02 && tmpA1 == 0x00 && tmpA3 == 0x00)
-		set_PWM(293.66);
-	else if (tmpA3 == 0x04 && tmpA1 == 0x00 && tmpA2 == 0x00)
-		set_PWM(329.63);
-	else 
-		set_PWM(0.00);*/
 	if (!sound)
 		set_PWM(0.00);
 	else 
