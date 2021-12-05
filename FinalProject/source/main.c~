@@ -32,8 +32,7 @@ unsigned char text[32] = "                                       ";
 unsigned char tmp_msg[32] = "                                       ";
 
 float temperature;
-float desired_temp = 24; 
-unsigned char vert, horz, sel, motion, up, down, tempmenu_on, fan_on, motion_on, tmpt0, tmpt1, tmpD = 0x00;
+unsigned char vert, horz, sel, motion, tmpt0, tmpt1, tmpD = 0x00;
 
 void MainMenuMSG() {
         strcpy( (unsigned char*) tmp_msg, " Set Temp");
@@ -57,26 +56,8 @@ void TempMenuMSG() {
         return;
 }
 
-void SensorMenuMSG() {
-        strcpy( (unsigned char*) tmp_msg, " FAN STATUS:    ");
-	if (fan_on) {tmp_msg[13]='O';tmp_msg[14]='N';}
-	else {tmp_msg[13]='O';tmp_msg[14]='F';tmp_msg[15]='F';}
-        
-	for (int i = 0; i < 16; i++)
-                text[i] = tmp_msg[i];
 
-        strcpy( (unsigned char*) tmp_msg, " MOTION:        ");
-	if (motion_on == 0x01) {tmp_msg[13]='O';tmp_msg[14]='N';}
-        else {tmp_msg[13]='O';tmp_msg[14]='F';tmp_msg[15]='F';}
-
-        for (int i = 0; i < 16; i++)
-                text[i + 16] = tmp_msg[i];
-        
-	return;
-}
-
-
-enum MenuStates {mainmenu, mainmenu2, temp_menu, temp_set, sensor_menu, setfan, setfan_wait, horz_pause, setmotion, setmotion_wait, wait};
+enum MenuStates {mainmenu, mainmenu2, temp_menu};//, temp_set, wait};
 int MenuTick(int state) {
         switch(state) {
                 case mainmenu:
@@ -96,116 +77,35 @@ int MenuTick(int state) {
                         if (vert) {
                                 state = mainmenu;
                         }
-			else if (sel) {
-				state = sensor_menu;
-			}
                         else {
                                 state = mainmenu2;
                         }
                         break;
                 case temp_menu:
 			TempMenuMSG();
-                        if (sel) 
+                        if (sel) {
                                 state = temp_menu;
-                        else { 
-				state = temp_set;
-				tempmenu_on = 0x01;
-			}
+                        }
+                        else 
+				state - temp_menu;
+                                //state = temp_set;
                         break;
-		case sensor_menu:
-			SensorMenuMSG();
-			if (sel)
-				state = sensor_menu;
-			else 
-				state = setfan;
-			break;
-                case temp_set:
-			TempMenuMSG();
-			tmpt0 = desired_temp/10  + '0';
-                        tmpt1 = (int)desired_temp % 10 + '0';
-                        text[31] = 'C';
-                        text[28] = tmpt0;
-                        text[29] = tmpt1;
-			up = 0x00;
-			down = 0x00;
-                        if (vert) 
-                                up = 0x01; 
-                        else if (horz) 
-                                down = 0x01; 
-                        
-			if (!sel)
+                /*case temp_set:
+                        if (vert) {
+                                up = 0x01; LCD_Cursor(1); LCD_WriteData('>'); LCD_Cursor(17); LCD_WriteData(' '); }
+                        else if (horz) {
+                                down = 0x01; LCD_Cursor(17); LCD_WriteData('>'); LCD_Cursor(1); LCD_WriteData(' ');}
+                        if (!sel)
                                 state = temp_set;
-                        else if (sel) {
-                                state = wait;   
-				tempmenu_on = 0x00;
-			}			
+                        else
+                                state = wait;                           
                         break;
-		case setfan:
-			SensorMenuMSG();
-			text[0] = '>'; 
-			if (horz) 
-				state = horz_pause;
-			else if (sel) {
-				if(fan_on)
-					fan_on = 0x00;
-				else 
-					fan_on = 0x01;
-				state = setfan_wait;	
-			}
-			else if (vert) 
-				state = mainmenu;	
-			else 
-				state = setfan;
-			break;
-		case setfan_wait:
-			SensorMenuMSG();
-			text[0] = '>';
-			if (sel) 
-				state = setfan_wait; 
-			else if (horz) 
-				state = setfan_wait; 
-			else
-				state = setfan;
-			break;
-		case horz_pause:
-			SensorMenuMSG();
-			text[16] = '>';
-			if (horz)
-				state = horz_pause;
-			else 
-				state = setmotion;	
-			break;
-		case setmotion:
-			SensorMenuMSG();
-			text[16] = '>';
-			if (sel) {
-				if (motion_on)
-					motion_on = 0x00;
-				else 
-					motion_on = 0x01;
-				state = setmotion_wait;
-			}
-			else if (horz)
-				state = setfan_wait;
-			else if (vert)
-				state = mainmenu;
-			else 
-				state = setmotion;
-			break;
-		case setmotion_wait:
-			SensorMenuMSG();
-			text[16] = '>';
-			if (sel) 
-				state = setmotion_wait;
-			else
-				state = setmotion;
-			break;
                 case wait:
                         if (sel)
                                 state = wait;
                         else 
                                 state = mainmenu;
-                        break;
+                        break;*/
                 default:
                         state = mainmenu;
                         break;
@@ -316,24 +216,6 @@ int JoyStickTick(int state) {
 	
 }
 
-enum DTempStates {dtemploop};
-int DesiredTempTick(int state) {
-	switch (state) {
-		case dtemploop:
-			if (up && desired_temp < 100 && tempmenu_on)
-				desired_temp++;
-			else if (down && desired_temp > 0 && tempmenu_on) 
-				desired_temp--;
-
-			state = dtemploop;
-			break;
-		default:
-			state = dtemploop;
-			break;
-	}
-	return state;
-}
-
 void ADC_init() {
 	ADCSRA |= (1<<ADEN)|(1<<ADSC)|(1<<ADATE);
 }
@@ -344,9 +226,9 @@ int main(void) {
 	DDRC = 0x00; PORTC = 0x7F;
 	DDRD = 0xFF; PORTD = 0x00;
 
-	static task task1, task2, task3, task4, task5;
+	static task task1, task2, task3, task4;
 
-	task *tasks[] = {&task1, &task2, &task3, &task4, &task5};
+	task *tasks[] = {&task1, &task2, &task3, &task4};
 	const unsigned short numTasks = sizeof(tasks)/sizeof(task*);
 
 	const char start = -1;
@@ -355,7 +237,6 @@ int main(void) {
 	task2.state = start; task2.period = 200; task2.elapsedTime = task2.period; task2.TickFct = &MotionTick;
 	task3.state = start; task3.period = 100; task3.elapsedTime = task3.period; task3.TickFct = &TempSensorTick;
 	task4.state = start; task4.period = 100; task4.elapsedTime = task4.period; task4.TickFct = &MenuTick;
-	task5.state = start; task5.period = 500; task5.elapsedTime = task5.period; task5.TickFct = &DesiredTempTick;
 
 	TimerSet(100);
 	TimerOn();
