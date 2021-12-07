@@ -153,7 +153,7 @@ int MenuTick(int state) {
 				state = setfan_wait;	
 			}
 			else if (horz) 
-				state = mainmenu;	
+				state = wait;	
 			else 
 				state = setfan;
 			break;
@@ -188,7 +188,7 @@ int MenuTick(int state) {
 			else if (vert)
 				state = setfan_wait;
 			else if (horz)
-				state = mainmenu;
+				state = wait;
 			else 
 				state = setmotion;
 			break;
@@ -201,7 +201,7 @@ int MenuTick(int state) {
 				state = setmotion;
 			break;
                 case wait:
-                        if (sel)
+                        if (sel || horz)
                                 state = wait;
                         else 
                                 state = mainmenu;
