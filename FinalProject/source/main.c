@@ -81,7 +81,7 @@ int MenuTick(int state) {
         switch(state) {
                 case mainmenu:
                         MainMenuMSG();
-			text[0] = '>';
+			text[0] = '>'; text[16] = ' ';
                         if (!sel && !horz) {
                                 state = mainmenu;
                         }
@@ -92,7 +92,7 @@ int MenuTick(int state) {
                         break;
                 case mainmenu2:
 			MainMenuMSG();
-			text[16] = '>';
+			text[16] = '>'; text[0] = ' ';
                         if (vert) {
                                 state = mainmenu;
                         }
@@ -334,6 +334,37 @@ int DesiredTempTick(int state) {
 	return state;
 }
 
+enum OutputStates {outputloop};
+int OutputTick(int state) {
+	switch (state) {
+		case outputloop: 
+			tmpD = 0x00;
+
+			if (motion)
+        	        	tmpD = 0x08;
+
+        		tmpD = tmpD | horz | sel | vert;
+
+			if (motion && motion_on) {
+				if (desired_temp <= temperature && fan_on)
+					tmpD = tmpD | 0x10;
+			}
+			else if (!motion_on) {
+				if (desired_temp <= temperature && fan_on)
+					tmpD = tmpD | 0x10;
+			}
+
+        		PORTD = tmpD;
+
+			state = outputloop;
+			break;
+		default: 
+			state = outputloop;
+			break;
+	}
+	return state;
+}
+
 void ADC_init() {
 	ADCSRA |= (1<<ADEN)|(1<<ADSC)|(1<<ADATE);
 }
@@ -344,9 +375,9 @@ int main(void) {
 	DDRC = 0x00; PORTC = 0x7F;
 	DDRD = 0xFF; PORTD = 0x00;
 
-	static task task1, task2, task3, task4, task5;
+	static task task1, task2, task3, task4, task5, task6;
 
-	task *tasks[] = {&task1, &task2, &task3, &task4, &task5};
+	task *tasks[] = {&task1, &task2, &task3, &task4, &task5, &task6};
 	const unsigned short numTasks = sizeof(tasks)/sizeof(task*);
 
 	const char start = -1;
@@ -356,6 +387,7 @@ int main(void) {
 	task3.state = start; task3.period = 100; task3.elapsedTime = task3.period; task3.TickFct = &TempSensorTick;
 	task4.state = start; task4.period = 100; task4.elapsedTime = task4.period; task4.TickFct = &MenuTick;
 	task5.state = start; task5.period = 500; task5.elapsedTime = task5.period; task5.TickFct = &DesiredTempTick;
+	task6.state = start; task6.period = 100; task6.elapsedTime = task6.period; task6.TickFct = &OutputTick;
 
 	TimerSet(100);
 	TimerOn();
@@ -363,8 +395,7 @@ int main(void) {
 	ADC_init();
 
 	unsigned char last_text[32] = "                                ";
-	unsigned char i;
-	unsigned char j;
+	unsigned char i, j;
 
     while (1) {
 	
@@ -382,20 +413,7 @@ int main(void) {
 		tasks[i]->elapsedTime += 100;
 	}
 
-	tmpD = 0x00;
-	
-	if (motion) 
-		tmpD = 0x08;
-
-	tmpD = tmpD | horz | sel | vert;
-	PORTD = tmpD;
-	
-	for (j = 0; j < 32; j++) {
-		LCD_Cursor(j+1);
-		if (last_text[j] != text[j])
-			LCD_WriteData(text[j]);
-
-	}
+	for (j = 0; j < 32; j++) { LCD_Cursor(j+1); if (last_text[j] != text[j]) {LCD_WriteData(text[j]);}}
 	
 	while(!TimerFlag);
 	TimerFlag = 0;
