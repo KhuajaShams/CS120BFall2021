@@ -76,7 +76,7 @@ void SensorMenuMSG() {
 }
 
 
-enum MenuStates {mainmenu, mainmenu2, temp_menu, temp_set, sensor_menu, setfan, setfan_wait, horz_pause, setmotion, setmotion_wait, wait};
+enum MenuStates {mainmenu, mainmenu2, temp_menu, temp_set, sensor_menu, setfan, setfan_wait, vert_pause, setmotion, setmotion_wait, wait};
 int MenuTick(int state) {
         switch(state) {
                 case mainmenu:
@@ -143,8 +143,8 @@ int MenuTick(int state) {
 		case setfan:
 			SensorMenuMSG();
 			text[0] = '>'; 
-			if (horz) 
-				state = horz_pause;
+			if (vert) 
+				state = vert_pause;
 			else if (sel) {
 				if(fan_on)
 					fan_on = 0x00;
@@ -152,7 +152,7 @@ int MenuTick(int state) {
 					fan_on = 0x01;
 				state = setfan_wait;	
 			}
-			else if (vert) 
+			else if (horz) 
 				state = mainmenu;	
 			else 
 				state = setfan;
@@ -162,16 +162,16 @@ int MenuTick(int state) {
 			text[0] = '>';
 			if (sel) 
 				state = setfan_wait; 
-			else if (horz) 
+			else if (vert) 
 				state = setfan_wait; 
 			else
 				state = setfan;
 			break;
-		case horz_pause:
+		case vert_pause:
 			SensorMenuMSG();
 			text[16] = '>';
-			if (horz)
-				state = horz_pause;
+			if (vert)
+				state = vert_pause;
 			else 
 				state = setmotion;	
 			break;
@@ -185,9 +185,9 @@ int MenuTick(int state) {
 					motion_on = 0x01;
 				state = setmotion_wait;
 			}
-			else if (horz)
-				state = setfan_wait;
 			else if (vert)
+				state = setfan_wait;
+			else if (horz)
 				state = mainmenu;
 			else 
 				state = setmotion;
@@ -399,9 +399,7 @@ int main(void) {
 
     while (1) {
 	
-	for (unsigned char k = 0; k < 32; k++) {
-		last_text[k] = text[k];
-	}
+	for (unsigned char k = 0; k < 32; k++) { last_text[k] = text[k];}
 	strcpy(text,  "                                      ");	
 	    
 	
